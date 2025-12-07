@@ -1,0 +1,6 @@
+requests
+qdrant-client
+python-dotenv
+pdfplumber
+beautifulsoup4
+tqdm

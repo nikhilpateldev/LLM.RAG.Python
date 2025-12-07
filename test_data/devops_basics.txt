@@ -1,0 +1,1 @@
+DevOps combines development and operations. It focuses on automation, CI/CD pipelines, and continuous deployment.
