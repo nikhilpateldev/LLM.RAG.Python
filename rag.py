@@ -7,7 +7,6 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
 import numpy as np
 
-# --- CONFIG ---
 
 QDRANT_URL = os.getenv("QDRANT_URL", "")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY","")
@@ -18,7 +17,6 @@ EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 LLM_MODEL = os.getenv("OLLAMA_LLM_MODEL", "llama3")
 
 
-# --- CLIENTS ---
 print(QDRANT_URL)
 qdrant = QdrantClient(
     url=QDRANT_URL,
@@ -26,13 +24,10 @@ qdrant = QdrantClient(
 )
 
 
-# --- HELPERS ---
 
 def embed_text(text):
-    print("1.2")
     payload = {"model": "nomic-embed-text", "input": text}
     r = requests.post("http://localhost:11434/api/embed", json=payload, timeout=60)
-    print("1.3")
     r.raise_for_status()
     resp = r.json()
     print("debug")
@@ -49,19 +44,16 @@ def retrieve_context(question: str, top_k: int = 5) -> List[qmodels.ScoredPoint]
     """
     query_vector = embed_text(question)
 
-    # ensure flat list, not [[...]]
     if hasattr(query_vector, "__len__") and len(query_vector) == 1:
         query_vector = query_vector[0]
     vector_data = query_vector.tolist() if hasattr(query_vector, "tolist") else query_vector
 
-    # Query Qdrant
     res = qdrant.query_points(
         collection_name=COLLECTION_NAME,
         query=vector_data,
         limit=5,
         with_payload=True
     )
-
 
     return res.points
 
@@ -163,7 +155,6 @@ def answer_question(question: str, top_k: int = 5, show_sources: bool = True) ->
 
 
 if __name__ == "__main__":
-    # Simple CLI test
     import sys
 
     q = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "How do I configure IIS on Windows?"
